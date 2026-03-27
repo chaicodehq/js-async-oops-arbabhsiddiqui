@@ -72,16 +72,66 @@
  *   //   { status: "rejected", reason: "Yeh chai available nahi hai!" }
  *   // ]
  */
+
+const prices = { cutting: 10, special: 20, ginger: 15, masala: 25 }
+//  *   - Returns a new Promise
+//  *   - Valid types: "cutting", "special", "ginger", "masala"
+//  *   - If type is invalid: reject with Error message "Yeh chai available nahi hai!"
+//  *   - If quantity <= 0 or not a number: reject with Error message "Kitni chai chahiye bhai?"
+//  *   - If valid: resolve with { type, quantity, total: price * quantity }
+//  *     (use setTimeout with 100ms delay to simulate preparation)
 export function orderChai(type, quantity) {
-  // Your code here
+
+  if (!["cutting", "special", "ginger", "masala"].includes(type)) {
+    return new Promise((res, rej) => {
+      setTimeout(() => {
+        rej(new Error("Yeh chai available nahi hai!"))
+      }, 100)
+    })
+  }
+
+  if (quantity <= 0 || typeof quantity != "number") {
+    return new Promise((res, rej) => {
+      setTimeout(() => {
+        rej(new Error("Kitni chai chahiye bhai?"))
+      }, 100)
+    })
+  }
+
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res({ type, quantity, total: prices[type] * quantity })
+    }, 100)
+  })
+
 }
 
+
+//  *   - Returns a new Promise
+//  *   - Valid ingredients: ["tea", "milk", "sugar", "ginger", "cardamom"]
+//  *   - If ingredient is in the list: resolve with { ingredient, available: true }
+//  *   - If not: reject with Error message "${ingredient} khatam ho gaya!"
 export function checkIngredients(ingredient) {
-  // Your code here
+
+  const validIngredients = ["tea", "milk", "sugar", "ginger", "cardamom"];
+  const MatchingIngredients = validIngredients.filter(item => item === ingredient)
+
+
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      if (MatchingIngredients.length > 0) {
+        res({ ingredient, available: true })
+      } else {
+        rej(new Error(`${ingredient} khatam ho gaya!`))
+      }
+    }, 100)
+  })
 }
+
+
 
 export function prepareChaiWithTimeout(type, timeoutMs) {
-  // Your code here
+
 }
 
 export function processChaiQueue(orders) {

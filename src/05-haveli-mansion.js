@@ -93,33 +93,141 @@ export class HaveliSecurity {
 
   constructor(haveliName, passcode, maxResidents) {
     // Your code here
+    this.haveliName = haveliName
+    this.#passcode = passcode
+    this.#maxResidents = maxResidents
+    this.#residents = []
+    this.#accessLog = []
   }
 
+  //    *   addResident(name, role, passcode)
+  //  *     - Only works if passcode matches this.#passcode
+  //  *     - role must be one of: "malik", "naukar", "mehmaan"
+  //  *     - Agar passcode wrong: return { success: false, message: "Galat passcode!" }
+  //  *     - Agar role invalid: return { success: false, message: "Invalid role!" }
+  //  *     - Agar name already exists in #residents: return { success: false, message: "Already a resident!" }
+  //  *     - Agar #residents.length >= #maxResidents: return { success: false, message: "Haveli full hai!" }
+  //  *     - Otherwise: push { name, role, addedAt: new Date().toISOString() } to #residents
+  //  *     - Returns { success: true, message: "${name} ab haveli ka ${role} hai!" }
   addResident(name, role, passcode) {
     // Your code here
+    if (this.#passcode !== passcode) return { success: false, message: "Galat passcode!" }
+
+    if (!["malik", "naukar", "mehmaan"].includes(role)) return { success: false, message: "Invalid role!" }
+
+    const isFound = this.#residents.filter(item => item.name === name)
+
+    if (isFound.length > 0) return { success: false, message: "Already a resident!" }
+
+    if (this.#residents.length >= this.#maxResidents) return {
+      success: false, message: "Haveli full hai!"
+    }
+
+    this.#residents.push({
+      name, role, addedAt: new Date().toISOString()
+    })
+
+
+    return { success: true, message: `${name} ab haveli ka ${role} hai!` }
+
   }
 
+  //  *   removeResident(name, passcode)
+  //  *     - Only works if passcode matches
+  //  *     - Removes resident by name from #residents
+  //  *     - Agar passcode wrong: return { success: false, message: "Galat passcode!" }
+  //  *     - Agar resident not found: return { success: false, message: "Resident nahi mila!" }
+  //  *     - Returns { success: true, message: "${name} ko haveli se nikal diya!" }
   removeResident(name, passcode) {
-    // Your code here
+    if (this.#passcode != passcode) return { success: false, message: "Galat passcode!" }
+
+    let isFound = false
+    const remaingItem = this.#residents.filter(item => {
+      if (item.name !== name) {
+
+        return item
+      } else {
+        isFound = true
+      }
+    });
+
+    if (isFound === false) return { success: false, message: "Resident nahi mila!" }
+
+    return { success: true, message: `${name} ko haveli se nikal diya!` }
+
   }
 
+  // - Checks if name is in #residents
+  //  *     - If yes: logs { name, time: new Date().toISOString(), allowed: true } to #accessLog
+  //  *       Returns { allowed: true, message: "Swagat hai ${name}!" }
+  //  *     - If no: logs { name, time: new Date().toISOString(), allowed: false } to #accessLog
+  //  *       Returns { allowed: false, message: "Aapka entry allowed nahi hai!" }
   verifyAccess(name) {
-    // Your code here
+    const logItem = { name, time: new Date().toISOString() }
+    const isFound = this.#residents.filter(item => item.name === name)
+    isFound.length > 0 ? logItem.allowed = true : logItem.allowed = false
+
+    this.#accessLog.push(logItem)
+
+    const message = logItem.allowed === true ? `Swagat hai ${name}!` : "Aapka entry allowed nahi hai!"
+
+
+    return {
+      allowed: logItem.allowed,
+      message
+    }
+
   }
+  //  *     - Returns COPY of #accessLog if passcode matches
+  //  *     - Returns null if passcode is wrong
 
   getAccessLog(passcode) {
-    // Your code here
+    if (this.#passcode !== passcode) return null
+
+    return [...this.#accessLog]
+
   }
 
+  //    *   changePasscode(oldPasscode, newPasscode)
+  //  *     - Validates oldPasscode matches current #passcode
+  //  *     - newPasscode must be at least 4 characters
+  //  *     - If old wrong: return { success: false, message: "Purana passcode galat hai!" }
+  //  *     - If new too short: return { success: false, message: "Naya passcode bahut chhota hai!" }
+  //  *     - Updates #passcode, returns { success: true, message: "Passcode badal diya!" }
   changePasscode(oldPasscode, newPasscode) {
-    // Your code here
+    if (this.#passcode !== oldPasscode) return { success: false, message: "Purana passcode galat hai!" }
+
+    if (newPasscode.length <= 4) return { success: false, message: "Naya passcode bahut chhota hai!" }
+
+    this.#passcode = newPasscode
+
+    return { success: true, message: "Passcode badal diya!" }
+
+
   }
+  //  *   getResidentCount()
+  //  *     - Returns number of residents (without exposing the list)
+  //  *
 
   getResidentCount() {
-    // Your code here
+    return this.#residents.length
   }
-
+  //  *   isResident(name)
+  //  *     - Returns true/false if name is in #residents
+  //  *     - Does NOT expose any other resident details
   isResident(name) {
-    // Your code here
+
+    const isFound = this.#residents.filter(item => item.name === name)
+
+    if (isFound.length > 0) return true
+
+    return false
+
   }
 }
+
+
+const haveli = new HaveliSecurity('Sheesh Mahal', 'raja1234', 5);
+const result = haveli.addResident('Thakur Sahab', 'malik', 'raja1234');
+
+console.log(result)
