@@ -74,13 +74,118 @@
  *   const boundFn = fixWithBind(cart);         // properly bound sellItem
  */
 export function createSamosaCart(ownerName, location) {
-  // Your code here
+
+  const samosaCart = {
+    owner: ownerName,
+    location: location,
+    menu: { samosa: 15, jalebi: 20, kachori: 25 },
+    sales: [],
+
+
+    sellItem(itemName, quantity) {
+      let selectedItemPrice;
+
+      for (const key in this.menu) {
+        if (key === itemName) {
+          selectedItemPrice = this.menu[key]
+          break
+        }
+      }
+
+      if (selectedItemPrice === undefined || quantity <= 0) return -1
+
+      const item = {
+        item: itemName,
+        quantity,
+        total: selectedItemPrice * quantity
+      }
+
+      console.log(item)
+      this.sales.push(item)
+      return selectedItemPrice * quantity
+
+
+    },
+
+    getDailySales() {
+
+      if (this.sales.length === 0) return 0
+
+      const total = this.sales.reduce((acc, c) => acc + c.total, 0)
+
+      return total
+    },
+
+    getPopularItem() {
+      if (this.sales.length === 0) return null
+
+      const roleCount = this.sales.reduce((acc, curr) => {
+        const item = curr.item;
+        acc[item] = (acc[item] || 0) + 1;
+        return acc;
+      }, {});
+
+
+      // console.log(roleCount)
+
+      const highestRole = Object.keys(roleCount).reduce((max, role) => {
+        return roleCount[role] > roleCount[max] ? role : max;
+      });
+
+      // console.log(highestRole);
+
+      return highestRole;
+
+    },
+
+    moveTo(newLocation) {
+      this.location = newLocation;
+
+      return `${this.owner} ka cart ab ${newLocation} pe hai!`;
+    },
+
+    resetDay() {
+      this.sales = [];
+
+      return `${this.owner} ka naya din shuru!`
+    }
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+  return samosaCart
+
 }
 
+// const cart = createSamosaCart('Ramu', 'Station Road');
+// cart.sellItem('samosa', 3)
+// cart.getDailySales()
+// cart.getPopularItem()
+
+
+
 export function demonstrateThisLoss(cart) {
-  // Your code here
+
+  let extractedSellItem = cart.sellItem
+
+  return extractedSellItem
+
 }
 
 export function fixWithBind(cart) {
-  // Your code here
+
+  let extractedSellItem = cart.sellItem
+
+
+  return extractedSellItem.bind(cart, 'samosa', 2)
+
 }

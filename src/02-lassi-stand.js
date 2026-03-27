@@ -73,15 +73,108 @@
  */
 export function LassiStand(name, city) {
   // Your code here
+  this.name = name;
+  this.city = city;
+  this.menu = [];
+  this.orders = [];
+  this._nextOrderId = 1
 }
 
-// Add prototype methods here:
-// LassiStand.prototype.addFlavor = function(flavor, price) { ... }
-// LassiStand.prototype.takeOrder = function(customerName, flavor, quantity) { ... }
-// LassiStand.prototype.completeOrder = function(orderId) { ... }
-// LassiStand.prototype.getRevenue = function() { ... }
-// LassiStand.prototype.getMenu = function() { ... }
+LassiStand.prototype.addFlavor = function (flavor, price) {
+
+  if (price <= 0) return -1
+
+  const isFound = this.menu.filter(item => item.flavor === flavor)
+
+  if (isFound.length !== 0) return -1;
+
+  this.menu.push({ flavor, price })
+
+  return this.menu.length;
+
+
+}
+
+LassiStand.prototype.takeOrder = function (customerName, flavor, quantity) {
+
+  if (quantity <= 0) return -1;
+
+  const isFound = this.menu.filter(item => item.flavor === flavor)
+
+  if (isFound.length === 0) return -1
+  const currentOrderId = this._nextOrderId;
+
+
+  const orderItem = {
+    id: currentOrderId,
+    customer: customerName,
+    flavor,
+    quantity,
+    total: isFound[0].price * quantity,
+    status: "pending"
+  }
+
+  this.orders.push(orderItem)
+
+
+  this._nextOrderId++;
+
+  return currentOrderId;
+
+
+
+
+}
+
+LassiStand.prototype.completeOrder = function (orderId) {
+  let findOrder = this.orders.filter(item => item.id === orderId && item.status != 'completed')
+
+  if (findOrder.length === 0) return false
+
+
+
+  this.orders.forEach(item => {
+    if (item.id === orderId) {
+      item.status = "completed"
+    }
+  })
+
+
+
+  return true
+
+
+}
+
+LassiStand.prototype.getRevenue = function () {
+
+
+  return this.orders.reduce(((acc, current) => {
+
+    if (current.status === 'completed') {
+
+      acc += current.total
+    }
+
+    return acc
+
+  }), 0)
+
+}
+
+LassiStand.prototype.getMenu = function () {
+  return [...this.menu]
+}
+
+
+
+
 
 export function isLassiStand(obj) {
   // Your code here
+
+  if (obj instanceof LassiStand) return true
+
+  return false;
+
 }

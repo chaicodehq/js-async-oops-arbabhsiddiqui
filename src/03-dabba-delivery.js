@@ -75,31 +75,137 @@
  *   // => { totalCustomers: 2, delivered: 1, pending: 1, mealBreakdown: { veg: 1, nonveg: 0, jain: 1 } }
  */
 export class DabbaService {
+
+  allowedmealPreference = ["veg", "nonveg", "jain"]
+
+
   constructor(serviceName, area) {
     // Your code here
+    this.serviceName = serviceName
+    this.area = area
+    this.customers = []
+    this._nextId = 1
   }
 
   addCustomer(name, address, mealPreference) {
     // Your code here
+
+    if (!this.allowedmealPreference.includes(mealPreference)) return null
+
+
+    const isFound = this.customers.filter(item => item.name === name)
+
+    if (isFound.length > 0) return null
+
+    const newCustomer = {
+      id: this._nextId,
+      name,
+      address,
+      mealPreference,
+      active: true,
+      delivered: false
+    }
+
+    this.customers.push(newCustomer)
+
+    this._nextId++
+
+
+    return newCustomer
+
+
   }
 
   removeCustomer(name) {
-    // Your code here
+    for (const item of this.customers) {
+      if (item.name === name && item.active === true) {
+        item.active = false
+        return true
+      }
+    }
+    return false;
   }
 
   createDeliveryBatch() {
-    // Your code here
+    const newBatch = []
+
+
+    this.customers.map(item => {
+      if (item.active === true) {
+        const batchItem = {
+          customerId: item.id,
+          name: item.name,
+          address: item.address,
+          mealPreference: item.mealPreference,
+          batchTime: new Date().toISOString()
+        }
+        newBatch.push(batchItem)
+      }
+    })
+    return newBatch
   }
 
   markDelivered(customerId) {
-    // Your code here
+    for (const item of this.customers) {
+      if (item.id === customerId && item.active === true) {
+        item.delivered = true
+        return true
+      }
+    }
+
+    return false;
   }
 
   getDailyReport() {
-    // Your code here
+    let totalCustomers = 0;
+    let delivered = 0;
+    let pending = 0;
+    let veg = 0;
+    let nonveg = 0;
+    let jain = 0;
+
+
+    this.customers.map(item => {
+
+      if (item.active === true) {
+        console.log(item)
+        totalCustomers++;
+
+        if (item.delivered === true) delivered++;
+        if (item.delivered === false) pending++
+        if (item.mealPreference === 'veg') veg++;
+        if (item.mealPreference === 'nonveg') nonveg++;
+        if (item.mealPreference === 'jain') jain++;
+
+      }
+
+
+    })
+
+
+    return {
+      totalCustomers,
+      delivered,
+      pending,
+      mealBreakdown: {
+        veg,
+        nonveg,
+        jain
+      }
+    }
+
+
+
   }
 
   getCustomer(name) {
-    // Your code here
+    const customerObj = this.customers.filter(item => item.name === name)
+
+    if (customerObj.length === 0) return null
+
+
+    return customerObj[0]
   }
 }
+
+
