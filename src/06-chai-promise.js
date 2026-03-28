@@ -132,8 +132,39 @@ export function checkIngredients(ingredient) {
 
 export function prepareChaiWithTimeout(type, timeoutMs) {
 
+  const race1 = orderChai(type, 1);
+
+  const race2 = new Promise((res, rej) => {
+    setTimeout(() => {
+      rej(new Error("Bahut der ho gayi, chai nahi bani!"))
+
+    }, timeoutMs)
+  })
+
+  return Promise.race([race1, race2])
+
+
+
 }
 
 export function processChaiQueue(orders) {
-  // Your code here
+
+  if (orders.length <= 0) {
+    return Promise.resolve([])
+  }
+
+  const allProcessedPromise = orders.map(async (order) => {
+
+    try {
+      let orderResult = await orderChai(order.type, order.quantity)
+      return { status: "fulfilled", value: orderResult }
+    } catch (error) {
+      return { status: "rejected", reason: error.message }
+    }
+
+  })
+
+  return Promise.all(allProcessedPromise)
+
+
 }

@@ -168,7 +168,7 @@ export class DabbaService {
     this.customers.map(item => {
 
       if (item.active === true) {
-        console.log(item)
+        (item)
         totalCustomers++;
 
         if (item.delivered === true) delivered++;

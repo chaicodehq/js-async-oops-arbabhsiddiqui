@@ -227,7 +227,3 @@ export class HaveliSecurity {
 }
 
 
-const haveli = new HaveliSecurity('Sheesh Mahal', 'raja1234', 5);
-const result = haveli.addResident('Thakur Sahab', 'malik', 'raja1234');
-
-console.log(result)

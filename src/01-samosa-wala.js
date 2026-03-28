@@ -100,7 +100,6 @@ export function createSamosaCart(ownerName, location) {
         total: selectedItemPrice * quantity
       }
 
-      console.log(item)
       this.sales.push(item)
       return selectedItemPrice * quantity
 
@@ -126,13 +125,13 @@ export function createSamosaCart(ownerName, location) {
       }, {});
 
 
-      // console.log(roleCount)
+      // (roleCount)
 
       const highestRole = Object.keys(roleCount).reduce((max, role) => {
         return roleCount[role] > roleCount[max] ? role : max;
       });
 
-      // console.log(highestRole);
+      // (highestRole);
 
       return highestRole;
 
